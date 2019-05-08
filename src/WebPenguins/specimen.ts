@@ -32,6 +32,10 @@ export class Specimen {
   }
 
   public constructor (species: Species, baseZIndex: number) {
+    if (!species.getGroup(SpecimenGroup.Entering).length) {
+      throw new Error(`Group “${SpecimenGroup.Entering}” is mandatory.`)
+    }
+
     this.baseZIndex = baseZIndex
     this.species = species
     this.type = this.species.getGroup(SpecimenGroup.Entering).random
@@ -39,7 +43,11 @@ export class Specimen {
     this.element.style.position = 'absolute'
     this.element.style.cursor = 'crosshair'
     this.element.addEventListener('click', (): void => {
-      this.setGroup(SpecimenGroup.Clicked)
+      if (this.species.getGroup(SpecimenGroup.Clicked).length) {
+        this.setGroup(SpecimenGroup.Clicked)
+      } else {
+        console.warn(`Group “${SpecimenGroup.Clicked}” is empty for this species.`)
+      }
     })
 
     this.placeRandomly()
@@ -82,7 +90,7 @@ export class Specimen {
     this.y = -100 - Math.random() * window.innerHeight
   }
 
-  public setGroup (group: SpecimenGroup): void {
+  public setGroup (group: string): void {
     if (this.step) {
       this.nextType = this.species.getGroup(group).random
       this.step.stop()
@@ -91,7 +99,11 @@ export class Specimen {
 
   public setBoundingClientRects (bcrs: RoBCRs): void {
     this.bcrs = bcrs
-    this.setGroup(SpecimenGroup.FallingGliding)
+    try {
+      this.setGroup(SpecimenGroup.FallingGliding)
+    } catch (error) {
+      this.placeRandomly()
+    }
   }
 
   public attach (element: HTMLElement): void {

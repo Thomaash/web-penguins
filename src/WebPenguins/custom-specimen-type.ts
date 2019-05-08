@@ -1,12 +1,11 @@
 import {
-  SpecimenGroup,
   SpecimenStepBuilder,
   SpecimenType
 } from './types'
 
 export class CustomSpecimenType implements SpecimenType {
   public readonly margin: SpecimenType['margin']
-  public readonly nextGroup: SpecimenGroup
+  public readonly nextGroup: SpecimenType['nextGroup']
   public readonly src: SpecimenType['src']
   public readonly step: SpecimenType['step']
   public readonly zIndex: SpecimenType['zIndex']
@@ -18,7 +17,7 @@ export class CustomSpecimenType implements SpecimenType {
     stepBuilder,
     zIndex
   }: {
-    nextGroup: SpecimenGroup
+    nextGroup: SpecimenType['nextGroup']
     offset: { x: number, y: number }
     src: string
     stepBuilder: SpecimenStepBuilder

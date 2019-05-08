@@ -2,10 +2,10 @@ export enum SpecimenGroup {
   Clicked = 'clicked',
   Dead = 'dead',
   Entering = 'entering',
-  FallingDying = 'fallingDying',
-  FallingGliding = 'fallingGliding',
+  FallingDying = 'falling-dying',
+  FallingGliding = 'falling-gliding',
   Gliding = 'gliding',
-  GroundDwelling = 'groundDwelling',
+  GroundDwelling = 'ground-dwelling',
   Hidden = 'hidden'
 }
 
@@ -25,7 +25,7 @@ export interface PenguinStep {
 }
 export interface SpecimenType {
   readonly margin: string
-  readonly nextGroup: SpecimenGroup
+  readonly nextGroup: string
   readonly src: string
   readonly step: (element: HTMLElement, bcrs: RoBCRs, x: number, y: number) => PenguinStep
   readonly zIndex: number

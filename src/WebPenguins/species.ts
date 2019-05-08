@@ -1,4 +1,4 @@
-import { SpecimenGroup, SpecimenType } from './types'
+import { SpecimenType } from './types'
 
 type Group = Array<Readonly<SpecimenType>> & {
   random: Readonly<SpecimenType>
@@ -18,13 +18,13 @@ function createGroup (): Group {
 
 export class Species {
   public amount: number
-  private map: Map<SpecimenGroup, Group> = new Map()
+  private map: Map<string, Group> = new Map()
 
   public constructor (amount: number = 20) {
     this.amount = amount
   }
 
-  public add (groups: SpecimenGroup[], specimenType: SpecimenType): Species {
+  public add (groups: string[], specimenType: SpecimenType): Species {
     groups.forEach((group): void => {
       this.getGroup(group).push(specimenType)
     })
@@ -32,7 +32,7 @@ export class Species {
     return this
   }
 
-  public getGroup (name: SpecimenGroup): Group {
+  public getGroup (name: string): Group {
     const group = this.map.get(name)
     if (group) {
       return group

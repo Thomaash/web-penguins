@@ -42,12 +42,17 @@ export class WebPenguins {
   public start (): void {
     const bcrs = this.getBCRs()
     this.penguins = this.species.map((species): Specimen[] => {
-      return [...Array(species.amount)].map((): Specimen => {
-        const penguin = new Specimen(species, this.baseZIndex)
-        penguin.setBoundingClientRects(bcrs)
-        penguin.attach(this.root)
-        return penguin
-      })
+      return [...Array(species.amount)].map((): Specimen | null => {
+        try {
+          const penguin = new Specimen(species, this.baseZIndex)
+          penguin.setBoundingClientRects(bcrs)
+          penguin.attach(this.root)
+          return penguin
+        } catch (error) {
+          console.error(error)
+          return null
+        }
+      }).filter((value): value is Specimen => value != null)
     }).flat(1)
     this.cleanup.push((): void => {
       this.penguins.splice(0).forEach((penguin): void => {
