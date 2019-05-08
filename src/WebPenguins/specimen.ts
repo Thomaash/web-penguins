@@ -34,7 +34,7 @@ export class Specimen {
   public constructor (species: Species, baseZIndex: number) {
     this.baseZIndex = baseZIndex
     this.species = species
-    this.type = this.species.entering.random
+    this.type = this.species.getGroup(SpecimenGroup.Entering).random
 
     this.element.style.position = 'absolute'
     this.element.style.cursor = 'crosshair'
@@ -61,7 +61,7 @@ export class Specimen {
           this.type = this.nextType
           this.nextType = null
         } else {
-          this.type = this.species[this.type.nextGroup].random
+          this.type = this.species.getGroup(this.type.nextGroup).random
         }
       }
     } catch (error) {
@@ -75,7 +75,7 @@ export class Specimen {
   }
 
   private placeRandomly (): void {
-    this.type = this.species.entering.random
+    this.type = this.species.getGroup(SpecimenGroup.Entering).random
     this.nextType = null
 
     this.x = margin + Math.floor((window.innerWidth - 2 * margin) * Math.random())
@@ -84,7 +84,7 @@ export class Specimen {
 
   public setGroup (group: SpecimenGroup): void {
     if (this.step) {
-      this.nextType = this.species[group].random
+      this.nextType = this.species.getGroup(group).random
       this.step.stop()
     }
   }

@@ -18,15 +18,7 @@ function createGroup (): Group {
 
 export class Species {
   public amount: number
-
-  public clicked: Group = createGroup()
-  public dead: Group = createGroup()
-  public entering: Group = createGroup()
-  public fallingDying: Group = createGroup()
-  public fallingGliding: Group = createGroup()
-  public gliding: Group = createGroup()
-  public groundDwelling: Group = createGroup()
-  public hidden: Group = createGroup()
+  private map: Map<SpecimenGroup, Group> = new Map()
 
   public constructor (amount: number = 20) {
     this.amount = amount
@@ -34,9 +26,20 @@ export class Species {
 
   public add (groups: SpecimenGroup[], specimenType: SpecimenType): Species {
     groups.forEach((group): void => {
-      this[group].push(specimenType)
+      this.getGroup(group).push(specimenType)
     })
 
     return this
+  }
+
+  public getGroup (name: SpecimenGroup): Group {
+    const group = this.map.get(name)
+    if (group) {
+      return group
+    } else {
+      const group = createGroup()
+      this.map.set(name, group)
+      return group
+    }
   }
 }

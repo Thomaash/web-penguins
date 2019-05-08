@@ -23,7 +23,6 @@ export interface PenguinStep {
   promise: Promise<SpecimenPosition>
   stop: () => void
 }
-export type SpecimenStepBuilder = (offset: SpecimenOffset) => SpecimenType['step']
 export interface SpecimenType {
   readonly margin: string
   readonly nextGroup: SpecimenGroup
@@ -31,3 +30,4 @@ export interface SpecimenType {
   readonly step: (element: HTMLElement, bcrs: RoBCRs, x: number, y: number) => PenguinStep
   readonly zIndex: number
 }
+export type SpecimenStepBuilder = (offset: SpecimenOffset) => SpecimenType['step']
