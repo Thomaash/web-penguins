@@ -1,0 +1,418 @@
+import { checkIntersection } from 'line-intersect'
+import { PenguinStep, SpecimenStepBuilder, SpecimenType } from './types'
+
+const emptyBCR: Readonly<ClientRect> = {
+  top: Number.POSITIVE_INFINITY,
+  right: Number.NEGATIVE_INFINITY,
+  bottom: Number.NEGATIVE_INFINITY,
+  left: Number.POSITIVE_INFINITY,
+
+  width: 0,
+  height: 0
+}
+
+interface Point { x: number, y: number }
+type PointWithDistance = Point & { distance: number }
+interface Line { start: Point, end: Point }
+function lineLineIntersection (
+  a: Line,
+  b: Line
+): PointWithDistance | undefined {
+  const { point } = checkIntersection(
+    a.start.x,
+    a.start.y,
+    a.end.x,
+    a.end.y,
+    b.start.x,
+    b.start.y,
+    b.end.x,
+    b.end.y
+  )
+
+  return point
+    ? {
+      ...point,
+      distance: Math.hypot(point.x - a.start.x, point.y - a.start.y)
+    }
+    : undefined
+}
+
+function getBCRIntersection (
+  lineStart: Point,
+  lineAngle: number,
+  bcr: ClientRect
+): PointWithDistance {
+  const distance = bcr.width + bcr.height
+  const line = {
+    start: lineStart,
+    end: {
+      x: lineStart.x + distance * Math.cos(lineAngle),
+      y: lineStart.y + distance * Math.sin(lineAngle)
+    }
+  }
+
+  return lineLineIntersection(line, {
+    start: {
+      x: bcr.right,
+      y: bcr.top
+    },
+    end: {
+      x: bcr.right,
+      y: bcr.bottom
+    }
+  }) || lineLineIntersection(line, {
+    start: {
+      x: bcr.left,
+      y: bcr.bottom
+    },
+    end: {
+      x: bcr.right,
+      y: bcr.bottom
+    }
+  }) || lineLineIntersection(line, {
+    start: {
+      x: bcr.left,
+      y: bcr.top
+    },
+    end: {
+      x: bcr.left,
+      y: bcr.bottom
+    }
+  }) || ((): never => {
+    throw new Error('An excavating intersaction should always be found.')
+  })()
+}
+
+function initialStop (): never {
+  throw new Error('Stop was called before being initialized.')
+}
+
+export function excavating (
+  direction: number = Math.PI / 2,
+  speed: number = 5
+): SpecimenStepBuilder {
+  return (offset): SpecimenType['step'] => {
+    return (element, bcrs, x, y): PenguinStep => {
+      const bcr = bcrs.reduce((acc, bcr): ClientRect => {
+        if (bcr.top !== y || bcr.left > x || bcr.right < x) {
+          return acc
+        } else {
+          return bcr
+        }
+      }, emptyBCR)
+
+      if (bcr === emptyBCR) {
+        throw new Error('No BCR was found, this should never happen.')
+      }
+
+      const intersection = getBCRIntersection({ x, y }, direction, bcr)
+      if ( // Excavating off the screen
+        intersection.y >= window.innerHeight ||
+          intersection.y <= 0
+      ) {
+        intersection.distance += 142
+        intersection.x = x + intersection.distance * Math.cos(direction)
+        intersection.y = y + intersection.distance * Math.sin(direction)
+      } else if ( // Excavating off the side of an element
+        intersection.x === bcr.left ||
+          intersection.x === bcr.right
+      ) {
+        intersection.distance += Math.min(
+          ( // Excavating off the screen
+            intersection.x <= 0 ||
+              intersection.x >= window.innerWidth
+              ? 142
+              : 10
+          ),
+          bcr.bottom - intersection.y
+        )
+        intersection.x = x + intersection.distance * Math.cos(direction)
+        intersection.y = y + intersection.distance * Math.sin(direction)
+      }
+      const { x: newX, y: newY, distance } = intersection
+
+      const animation = element.animate(
+        [{
+          transform: `translate(${x}px, ${y}px)`
+        }, {
+          transform: `translate(${newX}px, ${newY}px)`
+        }],
+        {
+          duration: (Math.abs(distance) * 1000) / Math.abs(speed),
+          easing: 'linear'
+        }
+      )
+
+      let stop: PenguinStep['stop'] = initialStop
+
+      const stopPromise: PenguinStep['promise'] = new Promise((resolve): void => {
+        stop = (): void => {
+          const bcr = element.getBoundingClientRect()
+          const currX = bcr.left + offset.x
+          const currY = bcr.top + offset.y
+
+          resolve({ x: currX, y: currY })
+
+          animation.cancel()
+        }
+      })
+      const promise: PenguinStep['promise'] = new Promise((resolve): void => {
+        animation.addEventListener(
+          'finish',
+          resolve.bind(null, { x: newX, y: newY })
+        )
+      })
+
+      return {
+        stop,
+        promise: Promise.race([
+          promise,
+          stopPromise
+        ])
+      }
+    }
+  }
+}
+
+export function ghostMoving (
+  direction: number = -Math.PI / 2,
+  speed: number = 20,
+  distance: number = 100,
+  easing: KeyframeAnimationOptions['easing'] = 'linear'
+): SpecimenStepBuilder {
+  return (offset): SpecimenType['step'] => {
+    return (element, _bcrs, x, y): PenguinStep => {
+      const newX = x + distance * Math.cos(direction)
+      const newY = y + distance * Math.sin(direction)
+
+      const animation = element.animate(
+        [{
+          transform: `translate(${x}px, ${y}px)`
+        }, {
+          transform: `translate(${newX}px, ${newY}px)`
+        }],
+        {
+          duration: (Math.abs(distance) * 1000) / Math.abs(speed),
+          easing
+        }
+      )
+
+      let stop: PenguinStep['stop'] = initialStop
+
+      const stopPromise: PenguinStep['promise'] = new Promise((resolve): void => {
+        stop = (): void => {
+          const bcr = element.getBoundingClientRect()
+          const currX = bcr.left + offset.x
+          const currY = bcr.top + offset.y
+
+          resolve({ x: currX, y: currY })
+
+          animation.cancel()
+        }
+      })
+      const promise: PenguinStep['promise'] = new Promise((resolve): void => {
+        animation.addEventListener(
+          'finish',
+          resolve.bind(null, { x: newX, y: newY })
+        )
+      })
+
+      return {
+        stop,
+        promise: Promise.race([
+          promise,
+          stopPromise
+        ])
+      }
+    }
+  }
+}
+
+export function falling (
+  speed: number = 50,
+  easing: KeyframeAnimationOptions['easing'] = 'ease-in',
+  maxDistance: number = Number.POSITIVE_INFINITY
+): SpecimenStepBuilder {
+  return (offset): SpecimenType['step'] => {
+    return (element, bcrs, x, y): PenguinStep => {
+      const bcr = bcrs.reduce((acc, bcr): ClientRect => {
+        if (bcr.top < y || bcr.left > x || bcr.right < x) {
+          return acc
+        } else if (acc.top < bcr.top) {
+          return acc
+        } else {
+          return bcr
+        }
+      }, emptyBCR)
+
+      if (bcr === emptyBCR) {
+        throw new Error('No BCR was found, this should never happen.')
+      }
+
+      const newY = Math.min(bcr.top, y + maxDistance)
+      const newX = x
+      const distance = newY - y
+
+      const speedFactor = 1 + (Math.random() - 0.5) * 0.07
+
+      const animation = element.animate(
+        [{
+          transform: `translate(${x}px, ${y}px)`
+        }, {
+          transform: `translate(${newX}px, ${newY}px)`
+        }],
+        {
+          duration: (Math.abs(distance) * 1000) / Math.abs(speed * speedFactor),
+          easing
+        }
+      )
+
+      let stop: PenguinStep['stop'] = initialStop
+
+      const stopPromise: PenguinStep['promise'] = new Promise((resolve): void => {
+        stop = (): void => {
+          const bcr = element.getBoundingClientRect()
+          const currX = newX
+          const currY = bcr.top + offset.y
+
+          resolve({ x: currX, y: currY })
+
+          animation.cancel()
+        }
+      })
+      const promise: PenguinStep['promise'] = new Promise((resolve): void => {
+        animation.addEventListener(
+          'finish',
+          resolve.bind(null, { x: newX, y: newY })
+        )
+      })
+
+      return {
+        stop,
+        promise: Promise.race([
+          promise,
+          stopPromise
+        ])
+      }
+    }
+  }
+}
+
+export function walking (
+  speed: number = 20,
+  easing: KeyframeAnimationOptions['easing'] = 'linear',
+  edgeDistance: number = 10
+): SpecimenStepBuilder {
+  return (offset): SpecimenType['step'] => {
+    return (element, bcrs, x, y): PenguinStep => {
+      const bcr = bcrs.reduce((acc, bcr): ClientRect => {
+        if (bcr.top !== y || bcr.left > x || bcr.right < x) {
+          return acc
+        } else {
+          return bcr
+        }
+      }, emptyBCR)
+
+      if (bcr === emptyBCR) {
+        throw new Error('No BCR was found, this should never happen.')
+      }
+
+      const distance = (
+        0.1 + (0.9 * Math.random())
+      ) * (
+        speed < 0
+          ? bcr.left - x + edgeDistance
+          : bcr.right - x - edgeDistance
+      )
+
+      const newY = bcr.top
+      const newX = x + distance
+
+      const animation = element.animate(
+        [{
+          transform: `translate(${x}px, ${y}px)`
+        }, {
+          transform: `translate(${newX}px, ${newY}px)`
+        }],
+        {
+          duration: (Math.abs(distance) * 1000) / Math.abs(speed),
+          easing
+        }
+      )
+
+      let stop: PenguinStep['stop'] = initialStop
+
+      const stopPromise: PenguinStep['promise'] = new Promise((resolve): void => {
+        stop = (): void => {
+          const bcr = element.getBoundingClientRect()
+          const currX = bcr.left + offset.x
+          const currY = newY
+
+          resolve({ x: currX, y: currY })
+
+          animation.cancel()
+        }
+      })
+      const promise: PenguinStep['promise'] = new Promise((resolve): void => {
+        animation.addEventListener(
+          'finish',
+          resolve.bind(null, { x: newX, y: newY })
+        )
+      })
+
+      return {
+        stop,
+        promise: Promise.race([
+          promise,
+          stopPromise
+        ])
+      }
+    }
+  }
+}
+
+export function waiting (
+  minimal: number = 5000,
+  variable: number = 10000
+): SpecimenStepBuilder {
+  return (): SpecimenType['step'] => {
+    return (element, _bcrs, x, y): PenguinStep => {
+      const animation = element.animate(
+        [{
+          transform: `translate(${x}px, ${y}px)`
+        }, {
+          transform: `translate(${x}px, ${y}px)`
+        }],
+        {
+          duration: minimal + (variable * Math.random())
+        }
+      )
+
+      let stop: PenguinStep['stop'] = (): never => {
+        throw new Error('Stop was called before being initialized.')
+      }
+
+      const stopPromise: PenguinStep['promise'] = new Promise((resolve): void => {
+        stop = (): void => {
+          resolve({ x, y })
+
+          animation.cancel()
+        }
+      })
+      const promise: PenguinStep['promise'] = new Promise((resolve): void => {
+        animation.addEventListener(
+          'finish',
+          resolve.bind(null, { x, y })
+        )
+      })
+
+      return {
+        stop,
+        promise: Promise.race([
+          promise,
+          stopPromise
+        ])
+      }
+    }
+  }
+}
