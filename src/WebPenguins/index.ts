@@ -7,7 +7,7 @@ import { createDefaultSpecies } from './penguins'
 export * from './stepBuilders'
 export { CustomSpecimenType } from './custom-specimen-type'
 export { Species } from './species'
-export { SpecimenGroup, SpecimenType } from './types'
+export { SpecimenType } from './types'
 export { createDefaultSpecies, PenguinZIndex } from './penguins'
 
 export interface WebPenguinsOptions {

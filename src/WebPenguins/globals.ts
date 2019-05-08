@@ -1,3 +1,3 @@
-import WebPenguins from './'
+import * as webPenguins from './'
 
-(window as any).WebPenguins = WebPenguins
+(window as any).webPenguins = webPenguins
