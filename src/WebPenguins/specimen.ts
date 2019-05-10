@@ -54,31 +54,29 @@ export class Specimen {
   }
 
   private async run (): Promise<void> {
-    this.step = this.type.step(this.element, this.bcrs, this.x, this.y)
-    try {
-      const { x, y } = await this.step.promise
-      this.step = null
+    while (this.element.parentNode) {
+      try {
+        this.step = this.type.step(this.element, this.bcrs, this.x, this.y)
+        const { x, y } = await this.step.promise
 
-      this.x = x
-      this.y = y
+        this.x = x
+        this.y = y
 
-      if (this.isOffScreen) {
-        this.placeRandomly()
-      } else {
         if (this.nextType) {
           this.type = this.nextType
           this.nextType = null
         } else {
           this.type = this.species.getGroup(this.type.nextGroup).random
         }
+      } catch (error) {
+        if (error.message === 'Reenter!') {
+          this.placeRandomly()
+        } else {
+          throw error
+        }
+      } finally {
+        this.step = null
       }
-    } catch (error) {
-      this.placeRandomly()
-      console.error(error)
-    }
-
-    if (this.element.parentNode) {
-      this.run()
     }
   }
 

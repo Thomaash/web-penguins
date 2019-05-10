@@ -1,14 +1,31 @@
 import { checkIntersection } from 'line-intersect'
 import { PenguinStep, SpecimenStepBuilder, SpecimenType } from './types'
 
-const emptyBCR: Readonly<ClientRect> = {
-  top: Number.POSITIVE_INFINITY,
-  right: Number.NEGATIVE_INFINITY,
-  bottom: Number.NEGATIVE_INFINITY,
-  left: Number.POSITIVE_INFINITY,
+function findBCR (
+  bcrs: Readonly<ClientRect[]>,
+  rate: (bcr: Readonly<ClientRect>) => number,
+  errorMessage: string = 'Reenter!'
+): Readonly<ClientRect> {
+  const bestBCRs: Array<Readonly<ClientRect>> = []
+  const bestRating = bcrs.reduce((bestRating, bcr): number => {
+    const rating = rate(bcr)
+    if (rating < bestRating) {
+      bestBCRs.length = 0
+      bestBCRs.push(bcr)
+      return rating
+    } else if (rating === bestRating) {
+      bestBCRs.push(bcr)
+      return bestRating
+    } else {
+      return bestRating
+    }
+  }, Number.POSITIVE_INFINITY)
 
-  width: 0,
-  height: 0
+  if (bestBCRs.length === 0 || bestRating === Number.POSITIVE_INFINITY) {
+    throw new Error(errorMessage)
+  }
+
+  return bestBCRs[Math.floor(Math.random() * bestBCRs.length)]
 }
 
 interface Point { x: number, y: number }
@@ -79,7 +96,7 @@ function getBCRIntersection (
       y: bcr.bottom
     }
   }) || ((): never => {
-    throw new Error('An excavating intersaction should always be found.')
+    throw new Error('An excavating intersection should always be found.')
   })()
 }
 
@@ -93,17 +110,17 @@ export function excavating (
 ): SpecimenStepBuilder {
   return (offset): SpecimenType['step'] => {
     return (element, bcrs, x, y): PenguinStep => {
-      const bcr = bcrs.reduce((acc, bcr): ClientRect => {
-        if (bcr.top !== y || bcr.left > x || bcr.right < x) {
-          return acc
-        } else {
-          return bcr
-        }
-      }, emptyBCR)
-
-      if (bcr === emptyBCR) {
-        throw new Error('No BCR was found, this should never happen.')
-      }
+      const bcr = findBCR(
+        bcrs,
+        (bcr): number => {
+          if (bcr.top !== y || bcr.left > x || bcr.right < x) {
+            return Number.POSITIVE_INFINITY
+          } else {
+            return 0
+          }
+        },
+        'No BCR was found, this should never happen.'
+      )
 
       const intersection = getBCRIntersection({ x, y }, direction, bcr)
       if ( // Excavating off the screen
@@ -235,19 +252,18 @@ export function falling (
 ): SpecimenStepBuilder {
   return (offset): SpecimenType['step'] => {
     return (element, bcrs, x, y): PenguinStep => {
-      const bcr = bcrs.reduce((acc, bcr): ClientRect => {
-        if (bcr.top < y || bcr.left > x || bcr.right < x) {
-          return acc
-        } else if (acc.top < bcr.top) {
-          return acc
-        } else {
-          return bcr
+      const bcr = findBCR(
+        bcrs,
+        (bcr): number => {
+          if (bcr.top < y || bcr.left > x || bcr.right < x) {
+            // unreachable
+            return Number.POSITIVE_INFINITY
+          } else {
+            // less is better
+            return bcr.top
+          }
         }
-      }, emptyBCR)
-
-      if (bcr === emptyBCR) {
-        throw new Error('No BCR was found, this should never happen.')
-      }
+      )
 
       const newY = Math.min(bcr.top, y + maxDistance)
       const newX = x
@@ -305,17 +321,17 @@ export function walking (
 ): SpecimenStepBuilder {
   return (offset): SpecimenType['step'] => {
     return (element, bcrs, x, y): PenguinStep => {
-      const bcr = bcrs.reduce((acc, bcr): ClientRect => {
-        if (bcr.top !== y || bcr.left > x || bcr.right < x) {
-          return acc
-        } else {
-          return bcr
-        }
-      }, emptyBCR)
-
-      if (bcr === emptyBCR) {
-        throw new Error('No BCR was found, this should never happen.')
-      }
+      const bcr = findBCR(
+        bcrs,
+        (bcr): number => {
+          if (bcr.top !== y || bcr.left > x || bcr.right < x) {
+            return Number.POSITIVE_INFINITY
+          } else {
+            return 0
+          }
+        },
+        'No BCR was found, this should never happen.'
+      )
 
       const distance = (
         0.1 + (0.9 * Math.random())
@@ -369,29 +385,6 @@ export function walking (
       }
     }
   }
-}
-
-function findBCR (bcrs: Readonly<ClientRect[]>, rate: (bcr: Readonly<ClientRect>) => number): Readonly<ClientRect> {
-  const bestBCRs: Array<Readonly<ClientRect>> = []
-  const bestRating = bcrs.reduce((bestRating, bcr): number => {
-    const rating = rate(bcr)
-    if (rating < bestRating) {
-      bestBCRs.length = 0
-      bestBCRs.push(bcr)
-      return rating
-    } else if (rating === bestRating) {
-      bestBCRs.push(bcr)
-      return bestRating
-    } else {
-      return bestRating
-    }
-  }, Number.POSITIVE_INFINITY)
-
-  if (bestBCRs.length === 0 || bestRating === Number.POSITIVE_INFINITY) {
-    throw new Error('No BCR was found, this should never happen.')
-  }
-
-  return bestBCRs[Math.floor(Math.random() * bestBCRs.length)]
 }
 
 export function edgeToEdgeWalking (
