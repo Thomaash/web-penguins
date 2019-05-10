@@ -4,6 +4,7 @@ import {
   Species,
   WebPenguins,
   createDefaultSpecies,
+  edgeToEdgeWalking,
   excavating,
   falling,
   ghostMoving,
@@ -65,6 +66,27 @@ if (location.hash === '#species') {
     })
   )
 
+  const edgeToEdge = new Species(1)
+  edgeToEdge.add(
+    ['entering'],
+    new CustomSpecimenType({
+      nextGroup: 'entering',
+      offset: { x: 16, y: 32 },
+      src: 'assets/placeholders/gray.png',
+      stepBuilder: edgeToEdgeWalking(-80, 'linear', 80, true, false),
+      zIndex: PenguinZIndex.Normal
+    })
+  ).add(
+    ['entering'],
+    new CustomSpecimenType({
+      nextGroup: 'entering',
+      offset: { x: 16, y: 32 },
+      src: 'assets/placeholders/gray.png',
+      stepBuilder: edgeToEdgeWalking(80, 'linear', 80, false, true),
+      zIndex: PenguinZIndex.Normal
+    })
+  )
+
   const wp = new WebPenguins({
     obstacles: [
       document.getElementById('ground'),
@@ -76,7 +98,7 @@ if (location.hash === '#species') {
     ].filter(function neqNull<T> (value: T | null | undefined): value is T {
       return value != null
     }),
-    species: [createDefaultSpecies(5), placeholders]
+    species: [createDefaultSpecies(5), placeholders, edgeToEdge]
   })
 
   wp.start()

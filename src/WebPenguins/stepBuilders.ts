@@ -371,6 +371,105 @@ export function walking (
   }
 }
 
+function findBCR (bcrs: Readonly<ClientRect[]>, rate: (bcr: Readonly<ClientRect>) => number): Readonly<ClientRect> {
+  const bestBCRs: Array<Readonly<ClientRect>> = []
+  const bestRating = bcrs.reduce((bestRating, bcr): number => {
+    const rating = rate(bcr)
+    if (rating < bestRating) {
+      bestBCRs.length = 0
+      bestBCRs.push(bcr)
+      return rating
+    } else if (rating === bestRating) {
+      bestBCRs.push(bcr)
+      return bestRating
+    } else {
+      return bestRating
+    }
+  }, Number.POSITIVE_INFINITY)
+
+  if (bestBCRs.length === 0 || bestRating === Number.POSITIVE_INFINITY) {
+    throw new Error('No BCR was found, this should never happen.')
+  }
+
+  return bestBCRs[Math.floor(Math.random() * bestBCRs.length)]
+}
+
+export function edgeToEdgeWalking (
+  speed: number = 20,
+  easing: KeyframeAnimationOptions['easing'] = 'linear',
+  edgeDistance: number = 10,
+  ground: boolean = false,
+  elements: boolean = true
+): SpecimenStepBuilder {
+  return (offset): SpecimenType['step'] => {
+    return (element, bcrs): PenguinStep => {
+      const bcr = findBCR(
+        [
+          ...(elements ? bcrs : []),
+          ...(ground ? [{
+            left: 0,
+            right: window.innerWidth,
+            top: window.innerHeight,
+            bottom: window.innerHeight,
+            width: window.innerWidth,
+            height: 0
+          }] : [])
+        ],
+        (bcr): number => {
+          return bcr.left <= 0 && bcr.right >= window.innerWidth
+            ? 0
+            : Number.POSITIVE_INFINITY
+        }
+      )
+
+      const y = bcr.top
+      const oldX = speed < 0 ? bcr.left - edgeDistance : bcr.right + edgeDistance
+      const newX = speed < 0 ? bcr.right + edgeDistance : bcr.left - edgeDistance
+      const distance = Math.abs(newX - oldX)
+
+      const animation = element.animate(
+        [{
+          transform: `translate(${oldX}px, ${y}px)`
+        }, {
+          transform: `translate(${newX}px, ${y}px)`
+        }],
+        {
+          duration: (Math.abs(distance) * 1000) / Math.abs(speed),
+          easing
+        }
+      )
+
+      let stop: PenguinStep['stop'] = initialStop
+
+      const stopPromise: PenguinStep['promise'] = new Promise((resolve): void => {
+        stop = (): void => {
+          const bcr = element.getBoundingClientRect()
+          const currX = bcr.left + offset.x
+          const currY = y
+
+          resolve({ x: currX, y: currY })
+
+          animation.cancel()
+        }
+      })
+      const promise: PenguinStep['promise'] = new Promise((resolve): void => {
+        animation.addEventListener(
+          'finish',
+          resolve.bind(null, { x: newX, y })
+        )
+      })
+
+      return {
+        stop,
+        promise: Promise.race([
+          promise,
+          stopPromise
+        ])
+      }
+    }
+  }
+}
+
 export function waiting (
   minimal: number = 5000,
   variable: number = 10000
