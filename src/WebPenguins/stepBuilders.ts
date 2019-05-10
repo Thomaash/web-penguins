@@ -465,24 +465,29 @@ export function edgeToEdgeWalking (
 
 export function waiting (
   minimal: number = 5000,
-  variable: number = 10000
+  variable: number = 10000,
+  visible: boolean = true
 ): SpecimenStepBuilder {
   return (): SpecimenType['step'] => {
     return (element, _bcrs, x, y): PenguinStep => {
       const animation = element.animate(
-        [{
-          transform: `translate(${x}px, ${y}px)`
-        }, {
-          transform: `translate(${x}px, ${y}px)`
-        }],
+        visible
+          ? [{
+            transform: `translate(${x}px, ${y}px)`
+          }, {
+            transform: `translate(${x}px, ${y}px)`
+          }]
+          : [{
+            visibility: 'hidden'
+          }, {
+            visibility: 'hidden'
+          }],
         {
           duration: minimal + (variable * Math.random())
         }
       )
 
-      let stop: PenguinStep['stop'] = (): never => {
-        throw new Error('Stop was called before being initialized.')
-      }
+      let stop: PenguinStep['stop'] = initialStop
 
       const stopPromise: PenguinStep['promise'] = new Promise((resolve): void => {
         stop = (): void => {

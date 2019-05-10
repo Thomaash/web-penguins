@@ -8,6 +8,7 @@ import {
   excavating,
   falling,
   ghostMoving,
+  waiting,
   walking
 } from '@/WebPenguins'
 
@@ -70,6 +71,15 @@ if (location.hash === '#species') {
   edgeToEdge.add(
     ['entering'],
     new CustomSpecimenType({
+      nextGroup: 'walking',
+      offset: { x: 16, y: 32 },
+      src: 'assets/placeholders/gray.png',
+      stepBuilder: waiting(5000, 15000, false),
+      zIndex: PenguinZIndex.Normal
+    })
+  ).add(
+    ['walking'],
+    new CustomSpecimenType({
       nextGroup: 'entering',
       offset: { x: 16, y: 32 },
       src: 'assets/placeholders/gray.png',
@@ -77,7 +87,7 @@ if (location.hash === '#species') {
       zIndex: PenguinZIndex.Normal
     })
   ).add(
-    ['entering'],
+    ['walking'],
     new CustomSpecimenType({
       nextGroup: 'entering',
       offset: { x: 16, y: 32 },
@@ -98,7 +108,7 @@ if (location.hash === '#species') {
     ].filter(function neqNull<T> (value: T | null | undefined): value is T {
       return value != null
     }),
-    species: [createDefaultSpecies(5), placeholders, edgeToEdge]
+    species: [createDefaultSpecies(20), placeholders, edgeToEdge]
   })
 
   wp.start()
