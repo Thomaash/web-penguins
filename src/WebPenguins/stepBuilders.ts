@@ -416,8 +416,8 @@ export function edgeToEdgeWalking (
       )
 
       const y = bcr.top
-      const oldX = speed < 0 ? bcr.left - edgeDistance : bcr.right + edgeDistance
-      const newX = speed < 0 ? bcr.right + edgeDistance : bcr.left - edgeDistance
+      const oldX = speed > 0 ? bcr.left - edgeDistance : bcr.right + edgeDistance
+      const newX = speed > 0 ? bcr.right + edgeDistance : bcr.left - edgeDistance
       const distance = Math.abs(newX - oldX)
 
       const animation = element.animate(
