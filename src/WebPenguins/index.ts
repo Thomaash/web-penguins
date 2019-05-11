@@ -42,7 +42,7 @@ export class WebPenguins {
   public start (): void {
     const bcrs = this.getBCRs()
     this.penguins = this.species.map((species): Specimen[] => {
-      return [...Array(species.amount)].map((): Specimen | null => {
+      return new Array(species.amount).fill(null).map((): Specimen | null => {
         try {
           const penguin = new Specimen(species, this.baseZIndex)
           penguin.setBoundingClientRects(bcrs)

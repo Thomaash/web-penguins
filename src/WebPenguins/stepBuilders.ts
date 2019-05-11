@@ -1,6 +1,21 @@
 import { checkIntersection } from 'line-intersect'
 import { PenguinStep, SpecimenStepBuilder, SpecimenType } from './types'
 
+function buildGroundBCR (distance: number): Readonly<ClientRect> {
+  const r = window.innerWidth
+  const t = window.innerHeight + distance
+
+  return {
+    top: t,
+    right: r,
+    bottom: t,
+    left: 0,
+
+    width: r,
+    height: 0
+  }
+}
+
 function findBCR (
   bcrs: Readonly<ClientRect[]>,
   rate: (bcr: Readonly<ClientRect>) => number,
@@ -118,8 +133,7 @@ export function excavating (
           } else {
             return 0
           }
-        },
-        'No BCR was found, this should never happen.'
+        }
       )
 
       const intersection = getBCRIntersection({ x, y }, direction, bcr)
@@ -248,12 +262,16 @@ export function ghostMoving (
 export function falling (
   speed: number = 50,
   easing: KeyframeAnimationOptions['easing'] = 'ease-in',
-  maxDistance: number = Number.POSITIVE_INFINITY
+  maxDistance: number = Number.POSITIVE_INFINITY,
+  bellowGroundDistance: number = 100
 ): SpecimenStepBuilder {
   return (offset): SpecimenType['step'] => {
     return (element, bcrs, x, y): PenguinStep => {
       const bcr = findBCR(
-        bcrs,
+        [
+          ...bcrs,
+          buildGroundBCR(bellowGroundDistance)
+        ],
         (bcr): number => {
           if (bcr.top < y || bcr.left > x || bcr.right < x) {
             // unreachable
@@ -329,8 +347,7 @@ export function walking (
           } else {
             return 0
           }
-        },
-        'No BCR was found, this should never happen.'
+        }
       )
 
       const distance = (
@@ -399,14 +416,7 @@ export function edgeToEdgeWalking (
       const bcr = findBCR(
         [
           ...(elements ? bcrs : []),
-          ...(ground ? [{
-            left: 0,
-            right: window.innerWidth,
-            top: window.innerHeight,
-            bottom: window.innerHeight,
-            width: window.innerWidth,
-            height: 0
-          }] : [])
+          ...(ground ? [buildGroundBCR(0)] : [])
         ],
         (bcr): number => {
           return bcr.left <= 0 && bcr.right >= window.innerWidth

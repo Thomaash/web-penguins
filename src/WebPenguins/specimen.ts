@@ -50,7 +50,7 @@ export class Specimen {
       }
     })
 
-    this.placeRandomly()
+    this.enter()
   }
 
   private async run (): Promise<void> {
@@ -70,9 +70,10 @@ export class Specimen {
         }
       } catch (error) {
         if (error.message === 'Reenter!') {
-          this.placeRandomly()
+          this.enter()
         } else {
-          throw error
+          console.error(error)
+          this.enter()
         }
       } finally {
         this.step = null
@@ -80,18 +81,21 @@ export class Specimen {
     }
   }
 
-  private placeRandomly (): void {
-    this.type = this.species.getGroup(SpecimenGroup.Entering).random
-    this.nextType = null
+  private enter (): void {
+    this.setGroup(SpecimenGroup.Entering)
 
     this.x = margin + Math.floor((window.innerWidth - 2 * margin) * Math.random())
     this.y = -100 - Math.random() * window.innerHeight
   }
 
   public setGroup (group: string): void {
+    const type = this.species.getGroup(group).random
     if (this.step) {
-      this.nextType = this.species.getGroup(group).random
+      this.nextType = type
       this.step.stop()
+    } else {
+      this.type = type
+      this.nextType = null
     }
   }
 
@@ -100,7 +104,7 @@ export class Specimen {
     try {
       this.setGroup(SpecimenGroup.FallingGliding)
     } catch (error) {
-      this.placeRandomly()
+      this.enter()
     }
   }
 
