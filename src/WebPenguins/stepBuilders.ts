@@ -523,3 +523,21 @@ export function waiting (
     }
   }
 }
+
+export function teleporting (
+  position: Point
+): SpecimenStepBuilder {
+  return (): SpecimenType['step'] => {
+    return (): PenguinStep => {
+      return {
+        stop: () => {},
+        promise: new Promise((resolve): void => {
+          resolve({
+            x: position.x,
+            y: position.y
+          })
+        })
+      }
+    }
+  }
+}
