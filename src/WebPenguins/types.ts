@@ -26,6 +26,7 @@ export interface PenguinStep {
 export interface SpecimenType {
   readonly margin: string
   readonly nextGroup: string
+  readonly reloadImage: boolean
   readonly src: string
   readonly step: (element: HTMLElement, bcrs: RoBCRs, x: number, y: number) => PenguinStep
   readonly zIndex: number

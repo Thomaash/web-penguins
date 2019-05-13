@@ -13,22 +13,20 @@ export class Specimen {
   private baseZIndex: number
   private species: Species
 
-  private _type!: SpecimenType
+  private _type!: SpecimenType // Initialized through setter
   private get type (): SpecimenType {
     return this._type
   }
   private set type (type: SpecimenType) {
-    this._type = type
-    this.element.src = type.src
+    // Only reload image if requested, first or different image is used
+    if (!this.element.src || type.reloadImage || this.type.src !== type.src) {
+      this.element.src = type.src
+    }
+
     this.element.style.margin = type.margin
     this.element.style.zIndex = `${this.baseZIndex + type.zIndex}`
-  }
 
-  private get isOffScreen (): boolean {
-    return this.x < 0 ||
-      this.x > window.innerWidth ||
-      this.y < 0 ||
-      this.y > window.innerHeight
+    this._type = type
   }
 
   public constructor (species: Species, baseZIndex: number) {
