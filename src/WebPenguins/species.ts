@@ -9,7 +9,7 @@ function createGroup (): Group {
   Object.defineProperty(array, 'random', {
     get (): Readonly<SpecimenType> {
       return this[Math.floor(this.length * Math.random())] || ((): never => {
-        throw new Error('No specimen was found.')
+        throw new Error('No specimen was found in this group.')
       })()
     }
   })

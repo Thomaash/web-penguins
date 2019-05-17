@@ -89,7 +89,12 @@ export class WebPenguins {
       case 48: // Num0
       case 127: // Delete
         this.penguins.forEach((penguin): void => {
-          penguin.setGroup(SpecimenGroup.Clicked)
+          // Not every specimen must be clickable.
+          try {
+            penguin.setGroup(SpecimenGroup.Clicked)
+          } catch (error) {
+            console.error(error)
+          }
         })
         break
     }
