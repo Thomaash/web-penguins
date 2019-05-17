@@ -2,12 +2,11 @@ import 'web-animations-js/web-animations.min.js'
 import { Species } from './species'
 import { Specimen } from './specimen'
 import { SpecimenGroup, SpecimenType } from './types'
-import { createDefaultSpecies } from './penguins'
 
-export * from './stepBuilders'
+export * from './step-builders'
 export { CustomSpecimenType } from './custom-specimen-type'
 export { Species } from './species'
-export { SpecimenType } from './types'
+export { SpecimenType } // from './types'
 export { createDefaultSpecies, PenguinZIndex } from './penguins'
 
 export interface WebPenguinsOptions {
@@ -15,7 +14,7 @@ export interface WebPenguinsOptions {
   customPenguinTypes?: SpecimenType[]
   obstacles?: HTMLElement[]
   root?: HTMLElement
-  species?: Species[]
+  species: Species[]
 }
 
 export class WebPenguins {
@@ -31,8 +30,8 @@ export class WebPenguins {
     baseZIndex = 1000,
     obstacles = [],
     root = document.body,
-    species = [createDefaultSpecies(20)]
-  }: WebPenguinsOptions = {}) {
+    species
+  }: WebPenguinsOptions) {
     this.baseZIndex = baseZIndex
     this.obstacles = obstacles
     this.root = root
@@ -107,5 +106,3 @@ export class WebPenguins {
     })
   }
 }
-
-export default WebPenguins

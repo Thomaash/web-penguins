@@ -1,3 +1,4 @@
-lib
-dist
-node_modules
+/demo
+/dist
+/node_modules
+/web-penguins-*.tgz

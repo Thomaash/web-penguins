@@ -10,7 +10,7 @@ import {
   ghostMoving,
   waiting,
   walking
-} from '@/WebPenguins'
+} from '@/web-penguins'
 
 if (location.hash === '#species') {
   // Custom species
@@ -25,7 +25,7 @@ if (location.hash === '#species') {
     new CustomSpecimenType({
       nextGroup: 'ground-dwelling',
       offset: { x: 16, y: 32 },
-      src: 'assets/placeholders/red.png',
+      src: './assets/placeholders/red.png',
       stepBuilder: falling(200, 'ease-in'),
       zIndex: PenguinZIndex.Flier
     })
@@ -34,7 +34,7 @@ if (location.hash === '#species') {
     new CustomSpecimenType({
       nextGroup: 'ground-dwelling',
       offset: { x: 16, y: 32 },
-      src: 'assets/placeholders/yellow.png',
+      src: './assets/placeholders/yellow.png',
       stepBuilder: walking(20, 'linear'),
       zIndex: PenguinZIndex.Normal
     })
@@ -43,7 +43,7 @@ if (location.hash === '#species') {
     new CustomSpecimenType({
       nextGroup: 'ground-dwelling',
       offset: { x: 16, y: 32 },
-      src: 'assets/placeholders/green.png',
+      src: './assets/placeholders/green.png',
       stepBuilder: walking(-20, 'linear'),
       zIndex: PenguinZIndex.Normal
     })
@@ -52,7 +52,7 @@ if (location.hash === '#species') {
     new CustomSpecimenType({
       nextGroup: 'falling',
       offset: { x: 16, y: 32 },
-      src: 'assets/placeholders/cyan.png',
+      src: './assets/placeholders/cyan.png',
       stepBuilder: excavating(Math.PI / 2),
       zIndex: PenguinZIndex.Normal
     })
@@ -61,7 +61,7 @@ if (location.hash === '#species') {
     new CustomSpecimenType({
       nextGroup: 'falling',
       offset: { x: 16, y: 32 },
-      src: 'assets/placeholders/blue.png',
+      src: './assets/placeholders/blue.png',
       stepBuilder: ghostMoving(-Math.PI / 2, 70, 200, 'ease-out'),
       zIndex: PenguinZIndex.Normal
     })
@@ -73,7 +73,7 @@ if (location.hash === '#species') {
     new CustomSpecimenType({
       nextGroup: 'walking',
       offset: { x: 16, y: 32 },
-      src: 'assets/placeholders/gray.png',
+      src: './assets/placeholders/gray.png',
       stepBuilder: waiting(5000, 15000, false),
       zIndex: PenguinZIndex.Normal
     })
@@ -82,7 +82,7 @@ if (location.hash === '#species') {
     new CustomSpecimenType({
       nextGroup: 'entering',
       offset: { x: 16, y: 32 },
-      src: 'assets/placeholders/gray.png',
+      src: './assets/placeholders/gray.png',
       stepBuilder: edgeToEdgeWalking(-80, 'linear', 80, true, false),
       zIndex: PenguinZIndex.Normal
     })
@@ -91,7 +91,7 @@ if (location.hash === '#species') {
     new CustomSpecimenType({
       nextGroup: 'entering',
       offset: { x: 16, y: 32 },
-      src: 'assets/placeholders/gray.png',
+      src: './assets/placeholders/gray.png',
       stepBuilder: edgeToEdgeWalking(80, 'linear', 80, false, true),
       zIndex: PenguinZIndex.Normal
     })
@@ -108,7 +108,7 @@ if (location.hash === '#species') {
     ].filter(function neqNull<T> (value: T | null | undefined): value is T {
       return value != null
     }),
-    species: [createDefaultSpecies(20), placeholders, edgeToEdge]
+    species: [createDefaultSpecies('./assets/penguins/', 20), placeholders, edgeToEdge]
   })
 
   wp.start()
@@ -124,7 +124,8 @@ if (location.hash === '#species') {
       document.getElementById('platform-e')
     ].filter(function neqNull<T> (value: T | null | undefined): value is T {
       return value != null
-    })
+    }),
+    species: [createDefaultSpecies('./assets/penguins/', 20)]
   })
 
   wp.start()

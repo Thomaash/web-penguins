@@ -1,16 +1,17 @@
 {
-  "compilerOptions": {
-    "target": "esnext",
-    "module": "commonjs",
-    "declaration": true,
-    "outDir": "lib",
-    "strict": true,
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["src/*"]
+    "compilerOptions": {
+        "target": "esnext",
+        "module": "es2015",
+        "moduleResolution": "node",
+        "declaration": false,
+        "outDir": "dist",
+        "strict": true,
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["src/*"]
+        },
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true
     },
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true
-  },
-  "include": ["src/**/*", "types/**/*"]
+    "include": ["src/**/*"]
 }

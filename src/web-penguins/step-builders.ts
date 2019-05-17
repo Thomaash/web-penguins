@@ -530,7 +530,7 @@ export function teleporting (
   return (): SpecimenType['step'] => {
     return (): PenguinStep => {
       return {
-        stop: () => {},
+        stop: (): void => {},
         promise: new Promise((resolve): void => {
           resolve({
             x: position.x,
