@@ -39,6 +39,10 @@ export enum PenguinZIndex {
 }
 
 export function createDefaultSpecies (assetsPath: string, amount: number = 20): Species {
+  if (typeof assetsPath !== 'string') {
+    throw new TypeError('Penguins assets path has to be a string.')
+  }
+
   assetsPath = assetsPath.replace(/\/$/, '')
   const species = new Species(amount)
 
