@@ -19,11 +19,7 @@ module.exports = {
   module: {
     rules: [{
       enforce: 'pre',
-      test: /\.(ts|js)$/,
-      use: 'source-map-loader'
-    }, {
-      enforce: 'pre',
-      test: /\.(ts|js)$/,
+      test: /\.m?[tj]sx?$/,
       exclude: /node_modules/,
       use: [{
         loader: 'eslint-loader',
@@ -32,9 +28,13 @@ module.exports = {
         }
       }]
     }, {
-      test: /\.ts$/,
+      test: /\.m?[tj]sx?$/,
       exclude: [/node_modules/],
-      use: 'awesome-typescript-loader'
+      use: [{
+        loader: 'babel-loader'
+      }, {
+        loader: 'ts-loader'
+      }]
     }]
   },
 
