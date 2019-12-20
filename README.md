@@ -1,4 +1,4 @@
-# jsPenguins
+# Web Penguins
 
 See demo on <https://thomaash.github.io/web-penguins/demo>.
 
