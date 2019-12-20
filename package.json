@@ -15,6 +15,7 @@
     "build:umd": "webpack --config webpack.umd.js -p",
     "clean": "rimraf \"dist/*\" \"demo/*\" \"web-penguins-*.tgz\"",
     "clean-build": "npm run clean && npm run build",
+    "deploy": "npm test && ./gh-pages.sh",
     "fix": "eslint --fix --ext .js,.ts .",
     "lint": "eslint --ext .js,.ts .",
     "serve": "webpack-dev-server --progress --profile --color --watch --mode development --config webpack.demo.js",
