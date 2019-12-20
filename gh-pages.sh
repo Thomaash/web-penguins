@@ -14,7 +14,7 @@ cd "$tmp"
 git checkout gh-pages
 git pull
 rm -rf *
-rsync -r "$repo/dist/" '.'
+rsync -r "$repo/demo" "$repo/dist/" '.'
 
 # Commit
 git add .
