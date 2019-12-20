@@ -2,9 +2,9 @@
   "name": "web-penguins",
   "version": "0.1.0",
   "license": "ISC",
-  "main": "dist/cjs.js",
-  "module": "dist/esm.js",
-  "browser": "dist/umd.js",
+  "main": "dist/web-penguins.cjs.js",
+  "module": "dist/web-penguins.esm.js",
+  "browser": "dist/web-penguins.umd.js",
   "types": "dist/types",
   "files": ["LICENSE", "README.md", "dist/**/*"],
   "scripts": {

@@ -10,11 +10,11 @@ module.exports = merge.strategy({
   output: 'replace'
 })(config, {
   entry: {
-    umd: './web-penguins'
+    'web-penguins': './web-penguins'
   },
 
   output: {
-    filename: '[name].js',
+    filename: '[name].umd.js',
     path: path.resolve(__dirname, 'dist'),
     library: {
       root: 'webPenguins',
