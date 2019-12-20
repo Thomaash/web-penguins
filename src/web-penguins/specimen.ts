@@ -10,13 +10,15 @@ export class Specimen {
   private bcrs: RoBCRs = []
   private step: PenguinStep | null = null
   private nextType: SpecimenType | null = null
-  private baseZIndex: number
-  private species: Species
+  private readonly baseZIndex: number
+  private readonly species: Species
 
   private _type!: SpecimenType // Initialized through setter
+
   private get type (): SpecimenType {
     return this._type
   }
+
   private set type (type: SpecimenType) {
     // Only reload image if requested, first or different image is used
     if (!this.element.src || type.reloadImage || this.type.src !== type.src) {
@@ -109,7 +111,7 @@ export class Specimen {
   public attach (element: HTMLElement): void {
     element.appendChild(this.element)
 
-    this.run()
+    this.run().catch(console.error.bind(console))
   }
 
   public detach (): void {

@@ -1,4 +1,4 @@
-import alias from 'rollup-plugin-alias'
+import alias from '@rollup/plugin-alias'
 import path from 'path'
 import pkg from './package.json'
 import tempDir from 'temp-dir'
@@ -10,8 +10,8 @@ const extensions = ['.js', '.jsx']
 export default [{
   input: 'src/web-penguins/index.ts',
   output: [
-    { file: pkg.main, format: 'cjs' },
-    { file: pkg.module, format: 'es' }
+    { file: pkg.main, format: 'cjs', sourcemap: true },
+    { file: pkg.module, format: 'es', sourcemap: true }
   ],
   plugins: [
     alias({

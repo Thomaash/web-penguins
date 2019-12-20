@@ -18,13 +18,13 @@ export interface WebPenguinsOptions {
 }
 
 export class WebPenguins {
-  private cleanup: Function[] = []
+  private readonly cleanup: Function[] = []
   private penguins: Specimen[] = []
 
-  private baseZIndex: number
-  private species: Species[]
-  private obstacles: HTMLElement[]
-  private root: HTMLElement
+  private readonly baseZIndex: number
+  private readonly species: Species[]
+  private readonly obstacles: HTMLElement[]
+  private readonly root: HTMLElement
 
   public constructor ({
     baseZIndex = 1000,
@@ -71,6 +71,7 @@ export class WebPenguins {
       window.removeEventListener('resize', resizeListener)
     })
   }
+
   public stop (): void {
     this.cleanup
       .splice(0)

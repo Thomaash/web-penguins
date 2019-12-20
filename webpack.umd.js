@@ -5,12 +5,12 @@ const path = require('path')
 const CopyPlugin = require('copy-webpack-plugin')
 
 module.exports = merge.strategy({
-  'devtool': 'replace',
-  'entry': 'replace',
-  'output': 'replace'
+  devtool: 'replace',
+  entry: 'replace',
+  output: 'replace'
 })(config, {
   entry: {
-    'umd': './web-penguins'
+    umd: './web-penguins'
   },
 
   output: {

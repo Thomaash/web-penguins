@@ -18,7 +18,7 @@ function createGroup (): Group {
 
 export class Species {
   public amount: number
-  private map: Map<string, Group> = new Map()
+  private readonly map: Map<string, Group> = new Map()
 
   public constructor (amount: number = 20) {
     this.amount = amount

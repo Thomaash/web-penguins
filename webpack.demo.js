@@ -5,14 +5,14 @@ const path = require('path')
 const CopyPlugin = require('copy-webpack-plugin')
 
 module.exports = merge.strategy({
-  'devServer': 'replace',
-  'devtool': 'replace',
-  'entry': 'replace',
-  'output': 'replace',
-  'plugins': 'merge'
+  devServer: 'replace',
+  devtool: 'replace',
+  entry: 'replace',
+  output: 'replace',
+  plugins: 'merge'
 })(config, {
   entry: {
-    'script': './demo/script'
+    script: './demo/script'
   },
 
   output: {

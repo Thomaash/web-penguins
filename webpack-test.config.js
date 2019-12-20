@@ -1,8 +1,6 @@
 const path = require('path')
-const webpack = require('webpack')
 
 const ROOT = path.resolve(__dirname, 'src')
-const DESTINATION = path.resolve(__dirname, 'dist')
 
 module.exports = {
   context: ROOT,
@@ -27,7 +25,7 @@ module.exports = {
       // LOADERS
       {
         test: /\.ts$/,
-        exclude: [ /node_modules/ ],
+        exclude: [/node_modules/],
         use: 'awesome-typescript-loader'
       }
     ]

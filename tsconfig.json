@@ -1,17 +1,17 @@
 {
-    "compilerOptions": {
-        "target": "esnext",
-        "module": "es2015",
-        "moduleResolution": "node",
-        "declaration": false,
-        "outDir": "dist",
-        "strict": true,
-        "baseUrl": ".",
-        "paths": {
-            "@/*": ["src/*"]
-        },
-        "allowSyntheticDefaultImports": true,
-        "esModuleInterop": true
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "es2015",
+    "moduleResolution": "node",
+    "declaration": false,
+    "outDir": "dist",
+    "strict": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
     },
-    "include": ["src/**/*"]
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true
+  },
+  "include": ["src/**/*"]
 }
