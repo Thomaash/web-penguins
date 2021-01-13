@@ -43,8 +43,7 @@ export class WebPenguins {
     this.penguins = this.species.map((species): Specimen[] => {
       return new Array(species.amount).fill(null).map((): Specimen | null => {
         try {
-          const penguin = new Specimen(species, this.baseZIndex)
-          penguin.setBoundingClientRects(bcrs)
+          const penguin = new Specimen(species, this.baseZIndex, bcrs)
           penguin.attach(this.root)
           return penguin
         } catch (error) {

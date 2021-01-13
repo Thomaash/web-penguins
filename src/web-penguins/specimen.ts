@@ -31,14 +31,15 @@ export class Specimen {
     this._type = type
   }
 
-  public constructor (species: Species, baseZIndex: number) {
+  public constructor (species: Species, baseZIndex: number, bcrs: RoBCRs) {
     if (!species.getGroup(SpecimenGroup.Entering).length) {
       throw new Error(`Group “${SpecimenGroup.Entering}” is mandatory.`)
     }
 
     this.baseZIndex = baseZIndex
+    this.bcrs = bcrs
     this.species = species
-    this.type = this.species.getGroup(SpecimenGroup.Entering).random
+    this.type = this.species.getGroup(SpecimenGroup.Entering).getOrThrow(0)
 
     this.element.style.position = 'absolute'
     this.element.style.cursor = 'crosshair'
