@@ -5,7 +5,7 @@ import { SpecimenGroup, SpecimenType } from './types'
 
 export * from './step-builders'
 export { CustomSpecimenType } from './custom-specimen-type'
-export { Species } from './species'
+export { CreateRandomGetter, Species, SpeciesOptions } from './species'
 export { SpecimenType } // from './types'
 export { createDefaultSpecies, PenguinZIndex } from './penguins'
 
